@@ -1,0 +1,2 @@
+The portainer docker compose is very-simple we juste set the port on which the UI service will listen
+and the port where the server will listen. We all also map the data from the host to the container with volumes.

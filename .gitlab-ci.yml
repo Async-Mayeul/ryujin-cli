@@ -1,0 +1,254 @@
+# The Docker image that will be used to build your app
+image: rust:latest
+
+#variables:
+#  DOCKER_DRIVER: overlay2
+#  DOCKER_HOST: tcp://docker:2375/
+#  CROSS_REMOTE: 1
+#  DOCKER_TLS_CERTDIR: ""
+
+# Enabling the Docker-in-Docker service for the pipeline
+#services:
+#  - name: docker:dind
+#    command: ["--tls=false"]
+
+# The stages that will be executed in the pipeline
+#stages:
+#    - build
+#    - deploy
+
+# The build stage
+# This stage will build the docker images, compile the project and generate the documentation
+
+# Build the Docker images used in the pipeline
+# build_ci_docker_images:
+#     stage: build
+#     # services:
+#     #     - docker:dind
+#     # before_script:
+#     #     - apt-get update -qq && apt-get install -y -qq docker.io
+#     script:
+#         # Login to the GitLab Container Registry
+#         - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+#         - echo "Building Docker image for the CI pipeline"
+#         - >
+#             docker build 
+#             -t registry.gitlab.com/ryujingroup/ryujin-cli/ci_executor 
+#             --label "org.opencontainers.image.title=$CI_PROJECT_TITLE" 
+#             --label "org.opencontainers.image.url=$CI_PROJECT_URL" 
+#             --label "org.opencontainers.image.created=$CI_JOB_STARTED_AT" 
+#             --label "org.opencontainers.image.revision=$CI_COMMIT_SHA" 
+#             --label "org.opencontainers.image.version=$CI_COMMIT_REF_NAME"  
+#             .
+#         - docker push registry.gitlab.com/ryujingroup/ryujin-cli/ci_executor
+
+# Build the Docker images of custom services
+# Docker images of custom services are in the services folder (services/<service-name>/Dockerfile)
+# build_services_docker_images:
+#     stage: build
+#     rules:
+#         - changes:
+#             - services/**/Dockerfile
+#     services:
+#         - docker:dind
+#     before_script:
+#         - apt-get update -qq && apt-get install -y -qq docker.io
+#     script:
+#         # Login to the GitLab Container Registry
+#         - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+#         - echo "Building Docker images of custom services"
+#         # Loop through the services folder and build the Docker images
+#         # the Docker images are named after the service folder
+#         # e.g. services/service1/Dockerfile will be built as service1
+#         - |
+#           for dockerfile in $(find services -name Dockerfile); do
+#               service=$(dirname $dockerfile) 
+#               echo "Building image for $service"
+#               docker build \
+#                 -t registry.gitlab.com/ryujingroup/ryujin-cli/$service \
+#                 --label "org.opencontainers.image.title=$CI_PROJECT_TITLE" \
+#                 --label "org.opencontainers.image.url=$CI_PROJECT_URL" \
+#                 --label "org.opencontainers.image.created=$CI_JOB_STARTED_AT" \
+#                 --label "org.opencontainers.image.revision=$CI_COMMIT_SHA" \
+#                 --label "org.opencontainers.image.version=$CI_COMMIT_REF_NAME" \
+#                 -f $dockerfile $service
+#               docker push registry.gitlab.com/ryujingroup/ryujin-cli/$service
+#           done
+
+# Build the app for x86_64 Linux
+# app_build_x86linux:
+#     stage: build
+#     # services:
+#     #     - docker:dind
+#     # before_script:
+#     #     - apt-get update -qq && apt-get install -y -qq docker.io
+#     script:
+#         # Install cross
+#         # - cargo install cross
+#         # Install the cross-compilation toolchain
+#         - rustup target add x86_64-unknown-linux-gnu
+#         # Build the project for the different targets
+#         - cross build --release --target=x86_64-unknown-linux-gnu
+
+#     artifacts:
+#         paths:
+#             - target/x86_64-unknown-linux-gnu/release/ryujin-cli
+
+# Build the app for x86_64 Windows
+# app_build_x86windows:
+#     stage: build
+#     # services:
+#     #     - docker:dind
+#     # before_script:
+#     #     - apt-get update -qq && apt-get install -y -qq docker.io
+#     script:
+#         # Install cross
+#         # - cargo install cross
+#         # Install the cross-compilation toolchain
+#         - rustup target add x86_64-pc-windows-msvc
+#         # Build the project for the different targets
+#         - cargo build --release --target=x86_64-pc-windows-msvc
+
+#     artifacts:
+#         paths:
+#             - target/x86_64-pc-windows-msvc/release/ryujin-cli.exe
+
+# Build the app for x86_64 macOS
+# app_build_x86macos:
+#     stage: build
+#     script:
+#         # Install the cross-compilation toolchain
+#         - rustup target add x86_64-apple-darwin
+#         # Build the project for the different targets
+#         - cargo build --release --target=x86_64-apple-darwin
+
+#     artifacts:
+#         paths:
+#             - target/x86_64-apple-darwin/release/ryujin-cli
+
+# Build the app for ARM MacOS
+# app_build_armmacos:
+#     stage: build
+#     script:
+#         # Install the cross-compilation toolchain
+#         - rustup target add aarch64-apple-darwin
+#         # Build the project for the different targets
+#         - cargo build --release --target=aarch64-apple-darwin
+
+#     artifacts:
+#         paths:
+#             - target/aarch64-apple-darwin/release/ryujin-cli
+
+# Build the app for ARM Linux
+# app_build_armlinux:
+#     stage: build
+#     script:
+#         # Install the cross-compilation toolchain
+#         - rustup target add aarch64-unknown-linux-gnu
+#         # Build the project for the different targets
+#         - cargo build --release --target=aarch64-unknown-linux-gnu
+
+#     artifacts:
+#         paths:
+#             - target/aarch64-unknown-linux-gnu/release/ryujin-cli
+
+
+doc_build:
+    stage: build
+    rules:
+        - if: $CI_COMMIT_BRANCH == "main"
+    script:
+        - cargo doc --no-deps
+    artifacts:
+        paths:
+            - target
+
+
+# The deploy stage
+# This stage will package the project for different platforms and upload it to the GitLab Package Registry
+
+# This stage will package the project for x86_64 Linux and upload it to the GitLab Package Registry
+# package_x86linux:
+#     stage: deploy
+#     needs: ["app_build_x86linux"]
+#     script:
+#         - echo "Packaging ryujin-cli version $APP_VERSION for x86_64 Linux"
+#         - mkdir ryujin-cli
+#         - cp target/x86_64-unknown-linux-gnu/release/ryujin-cli ryujin-cli/ryujin-cli
+#         - cp -r services ryujin-cli/services
+#         - cp -r conf ryujin-cli/conf
+#         - cp README.md ryujin-cli/README.md
+#         - tar -czvf x86_64-unknown-linux-gnu.ryujin-cli.$APP_VERSION.tar.gz ryujin-cli
+#         - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file x86_64-unknown-linux-gnu.ryujin-cli.$APP_VERSION.tar.gz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/x86_64-unknown-linux-gnu.ryujin-cli/$APP_VERSION/x86_64-unknown-linux-gnu.ryujin-cli.$APP_VERSION.tar.gz"'
+
+
+# # This stage will package the project for x86_64 Windows and upload it to the GitLab Package Registry
+# package_x86windows:
+#     stage: deploy
+#     needs: ["app_build_x86windows"]
+#     script:
+#         - echo "Packaging ryujin-cli version $APP_VERSION for x86_64 Windows"
+#         - mkdir ryujin-cli
+#         - cp target/x86_64-pc-windows-msvc/release/ryujin-cli.exe ryujin-cli/ryujin-cli.exe
+#         - cp -r services ryujin-cli/services
+#         - cp -r conf ryujin-cli/conf
+#         - cp README.md ryujin-cli/README.md
+#         - tar -czvf x86_64-pc-windows-msvc.ryujin-cli.$APP_VERSION.tar.gz ryujin-cli
+#         - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file x86_64-pc-windows-msvc.ryujin-cli.$APP_VERSION.tar.gz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/x86_64-pc-windows-msvc.ryujin-cli/$APP_VERSION/x86_64-pc-windows-msvc.ryujin-cli.$APP_VERSION.tar.gz"'
+
+# This stage will package the project for x86_64 macOS and upload it to the GitLab Package Registry
+# package_x86macos:
+#     stage: deploy
+#     needs: ["app_build_x86macos"]
+#     script:
+#         - echo "Packaging ryujin-cli version $APP_VERSION for x86_64 macOS"
+#         - mkdir ryujin-cli
+#         - cp target/x86_64-apple-darwin/release/ryujin-cli ryujin-cli/ryujin-cli
+#         - cp -r services ryujin-cli/services
+#         - cp -r conf ryujin-cli/conf
+#         - cp README.md ryujin-cli/README.md
+#         - tar -czvf x86_64-apple-darwin.ryujin-cli.$APP_VERSION.tar.gz ryujin-cli
+#         - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file x86_64-apple-darwin.ryujin-cli.$APP_VERSION.tar.gz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/x86_64-apple-darwin.ryujin-cli/$APP_VERSION/x86_64-apple-darwin.ryujin-cli.$APP_VERSION.tar.gz"'
+
+# # This stage will package the project for ARM macOS and upload it to the GitLab Package Registry
+# package_armmacos:
+#     stage: deploy
+#     needs: ["app_build_armmacos"]
+#     script:
+#         - echo "Packaging ryujin-cli version $APP_VERSION for ARM macOS"
+#         - mkdir ryujin-cli
+#         - cp target/aarch64-apple-darwin/release/ryujin-cli ryujin-cli/ryujin-cli
+#         - cp -r services ryujin-cli/services
+#         - cp -r conf ryujin-cli/conf
+#         - cp README.md ryujin-cli/README.md
+#         - tar -czvf aarch64-apple-darwin.ryujin-cli.$APP_VERSION.tar.gz ryujin-cli
+#         - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file aarch64-apple-darwin.ryujin-cli.$APP_VERSION.tar.gz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/aarch64-apple-darwin.ryujin-cli/$APP_VERSION/aarch64-apple-darwin.ryujin-cli.$APP_VERSION.tar.gz"'
+
+# This stage will package the project for ARM Linux and upload it to the GitLab Package Registry
+# package_armlinux:
+#     stage: deploy
+#     needs: ["app_build_armlinux"]
+#     script:
+#         - echo "Packaging ryujin-cli version $APP_VERSION for ARM Linux"
+#         - mkdir ryujin-cli
+#         - cp target/aarch64-unknown-linux-gnu/release/ryujin-cli ryujin-cli/ryujin-cli
+#         - cp -r services ryujin-cli/services
+#         - cp -r conf ryujin-cli/conf
+#         - cp README.md ryujin-cli/README.md
+#         - tar -czvf aarch64-unknown-linux-gnu.ryujin-cli.$APP_VERSION.tar.gz ryujin-cli
+#         - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file aarch64-unknown-linux-gnu.ryujin-cli.$APP_VERSION.tar.gz "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/aarch64-unknown-linux-gnu.ryujin-cli/$APP_VERSION/aarch64-unknown-linux-gnu.ryujin-cli.$APP_VERSION.tar.gz"'
+
+# This stage will deploy the documentation to GitLab Pages
+pages:
+    stage: deploy
+    rules:
+        - if: $CI_COMMIT_BRANCH == "main"
+    needs: ["doc_build"]
+    script:
+        - mkdir public
+        - cp -r target/doc public
+    artifacts:
+        paths:
+        # The folder that contains the files to be exposed at the Page URL
+        - public
+    publish: public/doc

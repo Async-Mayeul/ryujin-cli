@@ -1,0 +1,8 @@
+  pwnbox:
+    build: 
+      context: https://gitlab.com/ryujingroup/ryujin-cli.git#main:services/pwn/.
+      args:
+        USER: {{ pwn_user }}
+    volumes:
+      - {{ pwn_files }}:/home/{{ pwn_user }}/pwnfiles
+    tty: true

@@ -1,0 +1,12 @@
+[package]
+name = "ryujin-cli"
+version = "2.0.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.5.4", features = ["cargo"] }
+serde = { version = "1.0.198", features = ["derive"] }
+serde_json = "1.0.116"
+tera = "1.19.1"

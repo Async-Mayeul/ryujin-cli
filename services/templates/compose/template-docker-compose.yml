@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+{% for service in services %}
+{% if service == "apache" %}
+{% include "template-apache.yml" %}
+{% elif service == "mongodb" %}
+{% include "template-mongodb.yml" %}
+{% elif service == "portainer" %}
+{% include "template-portainer.yml" %}
+{% elif service == "nginx" %}
+{% include "template-nginx.yml" %}
+{% elif service == "pwn" %}
+{% include "template-pwn.yml" %}
+{% elif service == "php-apache" %}
+{% include "template-php-apache.yml" %}
+{% elif service == "react-nginx" %}
+{% include "template-react-nginx.yml" %}
+{% endif %}
+{% endfor %}

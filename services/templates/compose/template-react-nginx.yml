@@ -1,0 +1,12 @@
+  frontend:
+    build:
+      context: https://gitlab.com/ryujingroup/ryujin-cli.git#main:services/react_nginx/. 
+    container_name: {{ react_container_name }}
+    volumes:
+      - {{ package_json }}:/app/package_json
+      - {{ package_lock_json }}:/app/package-lock.json
+      - {{ nginx_conf }}:/app/.nginx/nginx.conf
+      - {{ src_path }}:/app/
+      - {{ public_path }}:/app/
+    ports:
+      - "80:80"

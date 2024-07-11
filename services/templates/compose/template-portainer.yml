@@ -1,0 +1,11 @@
+  portainer:
+    images: https://gitlab.com/ryujingroup/ryujin-cli.git#main:services/portainer/. 
+    restart: always
+    container_name: {{ portainer_container_name }}
+    ports:
+      - {{ ui_port }}:9443
+      - {{ server_port }}:8000
+    volumes:
+      - {{ portainer_volume }}:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+

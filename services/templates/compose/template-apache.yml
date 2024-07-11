@@ -1,0 +1,11 @@
+  apache:
+    image: https://gitlab.com/ryujingroup/ryujin-cli.git#main:services/apache/.
+    container_name: {{ apache_container_name }}
+    ports:
+      - "443:443"
+      - "8080:80"
+    volumes:
+      - "{{ server_cert_dir }}:/usr/local/apache2/ssl/server.crt"
+      - "{{ server_key_dir }}:/usr/local/apache2/ssl/server.key"
+      - "{{ source_dir }}:/usr/local/apache2/htdocs"
+

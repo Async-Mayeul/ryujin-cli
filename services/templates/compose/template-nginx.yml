@@ -1,0 +1,10 @@
+  nginx:
+    build:
+      context: https://gitlab.com/ryujingroup/ryujin-cli.git#main:services/nginx/.
+    volumes:
+      - {{ certificate_path }}:/etc/nginx/ssl/certs/nginx.crt
+      - {{ private_key_path }}:/etc/nginx/ssl/private/nginx.key
+      - {{ nginx_content }}:/usr/share/nginx/html/
+    ports:
+      - 8080:80
+      - 443:443

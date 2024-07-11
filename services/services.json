@@ -1,0 +1,222 @@
+{
+    "apache": {
+        "name": "apache",
+        "description": "Apache HTTP Server, often called Apache, is an open-source web server software developed by the Apache Software Foundation.\nIt's widely used for its flexibility, supporting modules that enhance functionality and server-side languages like PHP and Python.\nApache is known for its robustness, security, and compatibility across various operating systems.",
+        "current_version": "httpd:2.4",
+        "is_modified": true,
+        "last_update": "2024-06-14",
+        "developers": "Apache Software Foundation (modified by Mayeul Fargier)",
+        "links": {
+            "doc": "https://httpd.apache.org/docs/2.4/",
+            "github": "https://github.com/apache"
+        },
+        "tags": [
+            "websrv"
+        ],
+        "template_path": "services/templates/compose/template-apache.yml",
+        "variables": [
+            "apache_container_name",
+            "server_cert_dir",
+            "server_key_dir",
+            "source_dir"
+        ],
+        "questions": [
+            {
+                "question": "Enter the name of the apache container,\nthis name is used to easily manage your container.",
+                "variable": "apache_container_name"
+            },
+            {
+                "question": "Enter the path to the server certificate. The certificate enable an encryption connection and authenticate website's identity. The certificate will be copy from your host inside the container /usr/local/apache2/ssl/server.crt",
+                "variable": "server_cert_dir"
+            },
+            {
+                "question": "Enter the path to the server key. The server key is an private key to decrypt communication between server and client. The private will be copy from your host inside the container /usr/local/apache2/ssl/server.key. This key need to private and not shared",
+                "variable": "server_key_dir"
+            },
+            {
+                "question": "Enter the path to the source directory. Source directory is where your website source code is stored",
+                "variable": "source_dir"
+            }
+        ]
+    },
+    "portainer": {
+        "name": "portainer",
+        "description": "Portainer is an open-source container management tool that simplifies deploying, managing, and monitoring Docker environments.\n It features an intuitive web interface for managing containers, images, networks, and volumes.",
+        "current_version": "portainer/portainer-ce:alpine-sts",
+        "is_modified": false,
+        "last_update": "2024-05-21",
+        "developers": "portainer.io",
+        "links": {
+            "doc": "https://docs.portainer.io/",
+            "github": "https://github.com/portainer/portainer"
+        },
+        "tags": [
+            "docker"
+        ],
+        "template_path": "services/templates/compose/template-portainer.yml",
+        "variables": [
+          "portainer_container_name",
+          "ui_port",
+          "server_port",
+          "portainer_volume"
+        ],
+        "questions": [
+            {
+                "question": "Enter the name of the Portainer container. It's used to retrieve easily your container running with docker ps",
+                "variable": "portainer_container_name"
+            },
+            {
+                "question": "Enter the UI port, the port on which the UI listen. The UI server is separed from the main server where you manage yours containers",
+                "variable": "ui_port"
+            },
+            {
+                "question": "Enter the server port, the port on which the server listen. The main server",
+                "variable": "server_port"
+            },
+            {
+                "question": "Enter the path to the data of portainer. The data is yours docker images",
+                "variable": "portainer_volume"
+            }
+        ]
+    },
+    "nginx": {
+      "name": "nginx",
+      "description": "Nginx is a high-performance, open-source web server and reverse proxy server known for its stability and low resource consumption.\nIt efficiently handles HTTP requests, load balancing, and serving static content.",
+      "current_version": "nginxinc/nginx-unprivileged:latest",
+      "is_modified": true,
+      "last_update": "2024-06-12",
+      "developers": "(modified by Mayeul Fargier)",
+      "links": {
+        "doc": "https://nginx.org/en/docs/",
+        "github": "https://github.com/nginx/"
+      },
+      "tags": [
+        "websrv"
+      ],
+      "template_path": "services/templates/compose/template-nginx.yml",
+      "variables": [
+        "certificate_path",
+        "private_key_path",
+        "nginx_content"
+      ],
+      "questions": [
+        {
+          "question": "Enter the path where the certificate is stored. The certificate enable communication encryption and authenticate website's identity. The certificate will be copy from your host inside docker container in /etc/nginx/ssl/certs/.",
+          "variable": "certificate_path"
+        },
+        {
+          "question": "Enter the path where the private key is stored. The private key is used to decrypt message between the server and client that have been encrypted by the public key in the certificate. The private key will be copy from your host inside docker container in /etc/nginx/ssl/private/. The private key need to be private and not shared because it's an critical asset that permit to authenticate the web server.",
+          "variable": "private_key_path"
+        },
+        {
+          "question": "Enter the path where the content of your web site is stored. The source code of your website",
+          "variable": "nginx_content"
+        }
+      ]     
+    },
+    "pwn": {
+      "name": "pwn",
+      "description": "Container to deploy rapdly an environnment for reverse engineering. This container contains pwndbg, pwntools and radare2.\nPwndbg is an extension for gdb, pwntools is an python library used to write binary exploitation scripts and radare2 is a tool for easily reverse engineering binary files.",
+      "current_version": "1.0",
+      "is_modified": true,
+      "last_update": "2024-06-10",
+      "developers": "Docker image created by Mayeul Fargier",
+      "links": {
+        "doc": "https://book.rada.re/",
+        "github": "n/a"
+      },
+      "tags": [
+        "sectool"
+      ],
+      "template_path": "services/templates/compose/template-pwn.yml",
+      "variables": [
+        "pwn_user",
+        "pwn_files"
+      ],
+      "questions": [
+        {
+          "question": "Enter the user that will be used inside the container. This used to running the container as non-root user for security reasons.",
+          "variable": "pwn_user"
+        },
+        {
+          "question": "Enter the path where the binary you want to analyze are stored",
+          "variable": "pwn_files"
+        }
+      ]
+    },
+   "react-nginx": {
+      "name": "react-nginx",
+      "description": "A react app with nginx as web server. ReactJS is a Javascript framework to write flexible responsive web app. Nginx served your react app.",
+      "current_version": "1.0",
+      "is_modified": true,
+      "last_update": "2O24-06-9",
+      "developers": "Docker image modified by Mayeul Fargier",
+      "links": {
+        "doc": "https://nginx.org/en/docs/",
+        "github": "https://github.com/nginx/"
+      },
+      "tags": [
+        "websrv"
+      ],
+      "template_path": "services/templates/compose/template-react-nginx.yml",
+      "variables": [
+        "package_json",
+        "package_lock_json",
+        "nginx_conf",
+        "src_path",
+        "public_path",
+        "react_container_name"
+      ],
+      "questions": [
+        {
+          "question": "Enter the path where your package.json is stored. Package.json contain all your dependencies for your project",
+          "variable": "package_json"
+        },
+        {
+          "question":"Enter the path where your package-lock.json is stored.\npackage-lock.json is automatically generated for any operations where npm modifies either the node_modules tree, or package.json.\nIt describes the exact tree that was generated, such that subsequent installs are able to generate identical trees, regardless of intermediate dependency updates.",
+          "variable": "package_lock_json"
+        },
+        {
+          "question": "Enter the path where your nginx conf is stored. The nginx conf is used to setup vhost, this vhost will render your react app.",
+          "variable": "nginx_conf"
+        },
+        {
+          "question": "Enter the path where the src/ that contains your ReactJS app is stored",
+          "variable": "src_path"
+        },
+        {
+          "question": "Enter the path where the public/ that contains the content of your app is stored, like html, CSS, images...",
+          "variable": "public_path"
+        },
+        {
+          "question": "Enter the name of your container. This name is used to easily retrieve your container running with docker ps",
+          "variable": "react_container_name"
+        }
+      ]
+    }, 
+   "php-apache": {
+      "name": "php-apache",
+      "description": "Apache web server with php enabled",
+      "current_version": "php:8.0.9-apache",
+      "is_modified": true,
+      "last_update": "2024-06-20",
+      "developers": "(modified by Mayeul Fargier)",
+      "links": {
+        "doc": "https://hub.docker.com/_/php",
+        "github": "https://github.com/docker-library/php"
+      },
+      "tags": [
+        "websrv"
+      ],
+      "template_path": "services/templates/compose/template-php-apache.yml",
+      "variables": [
+        "app"
+      ],
+      "questions": [
+        {
+          "question": "Enter the path where your php app is stored",
+          "variable": "app"
+        }      
+      ]
+    }
+}
