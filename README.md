@@ -4,7 +4,7 @@
 
 Ryujin-cli is a Rust-based CLI application designed to simplify and secure Docker deployments. Acting as a Docker-compose generator, it offers a curated catalog of preconfigured services aimed at enhancing security. With its step-by-step configuration guidance, Ryujin-cli ensures users can customize their Docker-compose files efficiently while learning about best security practices. By making deployment easier, more efficient, and more secure, Ryujin not only facilitates Docker usage but also sensitizes users to the importance of proper configuration for optimal efficiency and security.
 
-Our services come preconfigured to the max, especially on the security front, to give you the best experience right out of the box. Plus, some Docker images are customized before they're added to our catalog. You can find the Dockerfiles for these images in our repository at the following path: [insert exact repo path].
+Our services come preconfigured to the max, especially on the security front, to give you the best experience right out of the box. Plus, some Docker images are customized before they're added to our catalog.
 
 All the modifications we make to these images are thoroughly documented in the README provided with each docker-compose file. This way, you can easily see what changes were made and why. It ensures full transparency and allows you to replicate or tweak our configurations to suit your specific needs.
 
